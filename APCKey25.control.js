@@ -136,8 +136,8 @@ function prepareClip(clip, track, scenes, numTracks, numScenes, isPlayingObserve
 	clip.contentObserver = function(slot, hasContent)
 	{
 		scene = scenes[slot];
-		sub_clip = scene.clips[clip.trackIndex];
-		sub_clip.hasContent = hasContent;
+		subClip = scene.clips[clip.trackIndex];
+		subClip.hasContent = hasContent;
 		updateScenes(scenes, numTracks, numScenes, isPlayingObservers, isQueuedObservers);
 	}
 	clipLauncher.addHasContentObserver(clip.contentObserver);
@@ -145,8 +145,8 @@ function prepareClip(clip, track, scenes, numTracks, numScenes, isPlayingObserve
 	clip.playingObserver = function(slot, playing)
 	{
 		scene = scenes[slot];
-		sub_clip = scene.clips[clip.trackIndex];
-		sub_clip.playing = playing;
+		subClip = scene.clips[clip.trackIndex];
+		subClip.playing = playing;
 		updateScenes(scenes, numTracks, numScenes, isPlayingObservers, isQueuedObservers);
 	}
 	clipLauncher.addIsPlayingObserver(clip.playingObserver);
@@ -154,8 +154,8 @@ function prepareClip(clip, track, scenes, numTracks, numScenes, isPlayingObserve
 	clip.queuedObserver = function(slot, queued)
 	{
 		scene = scenes[slot];
-		sub_clip = scene.clips[clip.trackIndex];
-		sub_clip.queued = queued;
+		subClip = scene.clips[clip.trackIndex];
+		subClip.queued = queued;
 		updateScenes(scenes, numTracks, numScenes, isPlayingObservers, isQueuedObservers);
 	}
 	clipLauncher.addIsQueuedObserver(clip.queuedObserver);
@@ -537,14 +537,14 @@ function initializeTrack(track, trackIndex)
    }
 
    // Register the track callbacks
-   track_object = mainTrackBank.getTrack(trackIndex);
-   track_object.getMute().addValueObserver(track.muteCallback);
-   track_object.getSolo().addValueObserver(track.soloCallback);
-   track_object.getArm().addValueObserver(track.armedCallback);
-   track_object.exists().addValueObserver(track.existsCallback);
-   track_object.addIsSelectedObserver(track.selectedCallback);
-   track_object.getIsMatrixStopped().addValueObserver(track.matrixStoppedCallback);
-   track_object.getIsMatrixQueuedForStop().addValueObserver(track.matrixQueuedForStopCallback);
+   trackObject = mainTrackBank.getTrack(trackIndex);
+   trackObject.getMute().addValueObserver(track.muteCallback);
+   trackObject.getSolo().addValueObserver(track.soloCallback);
+   trackObject.getArm().addValueObserver(track.armedCallback);
+   trackObject.exists().addValueObserver(track.existsCallback);
+   trackObject.addIsSelectedObserver(track.selectedCallback);
+   trackObject.getIsMatrixStopped().addValueObserver(track.matrixStoppedCallback);
+   trackObject.getIsMatrixQueuedForStop().addValueObserver(track.matrixQueuedForStopCallback);
 
    for (sceneIndex = 0; sceneIndex < gridHeight; ++sceneIndex)
    {
@@ -554,7 +554,7 @@ function initializeTrack(track, trackIndex)
    }
 
    // And the callbacks that pertain to clips
-   var clipLauncher = track_object.getClipLauncherSlots();
+   var clipLauncher = trackObject.getClipLauncherSlots();
    clipLauncher.addHasContentObserver(track.hasContentCallback);
    clipLauncher.addPlaybackStateObserver(track.playingStateCallback);
 }
@@ -581,10 +581,10 @@ function initializeSceneLauncher(sceneLauncher)
    sceneLauncher.display = function()
    {
       if (shiftOn) return;
-      scene_mode = sceneButtonMode.off;
-      if (sceneLauncher.queued) scene_mode = sceneButtonMode.blinkingGreen;
-      else if (sceneLauncher.playing) scene_mode = sceneButtonMode.green;
-      sendMidi(144, sceneLauncher.buttonNoteValue, scene_mode);
+      sceneMode = sceneButtonMode.off;
+      if (sceneLauncher.queued) sceneMode = sceneButtonMode.blinkingGreen;
+      else if (sceneLauncher.playing) sceneMode = sceneButtonMode.green;
+      sendMidi(144, sceneLauncher.buttonNoteValue, sceneMode);
    }
 
    sceneLauncher.clear = function()
@@ -691,13 +691,13 @@ function initializeArrows()
    }
 }
 
-function displayGrid(skip_clips)
+function displayGrid(skipClips)
 {
    for (trackIndex = 0; trackIndex < gridWidth; ++trackIndex)
    {
       track = grid[trackIndex];
       track.display();
-      if (!skip_clips)
+      if (!skipClips)
       {
          for (sceneIndex = 0; sceneIndex < gridHeight; ++sceneIndex)
          {
@@ -708,13 +708,13 @@ function displayGrid(skip_clips)
    }
 }
 
-function clearGrid(skip_clips)
+function clearGrid(skipClips)
 {
    for (trackIndex = 0; trackIndex < gridWidth; ++trackIndex)
    {
       track = grid[trackIndex];
       track.clear();
-      if (!skip_clips)
+      if (!skipClips)
       {
          for (sceneIndex = 0; sceneIndex < gridHeight; ++sceneIndex)
          {
